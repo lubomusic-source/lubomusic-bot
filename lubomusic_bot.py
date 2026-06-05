@@ -250,7 +250,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 f"🎼 Dịch vụ: {sp['name']}\n"
                 f"💰 Giá trị: {sp['price']}\n\n"
                 f"💳 Đặt cọc: {coc}\n\n"
-                f"🏦 Ngân hàng: VietinBank\n"
+                f"🏦 Ngân hàng: TPBank\n"
                 f"👤 Chủ TK: NGUYEN DAO TRANG KHANH\n"
                 f"🔢 STK: 00006131583\n\n"
                 f"📝 Nội dung chuyển khoản:\n"
