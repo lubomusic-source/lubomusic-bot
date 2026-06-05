@@ -1,0 +1,1 @@
+worker: python lubomusic_bot.py
