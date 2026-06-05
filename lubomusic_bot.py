@@ -101,7 +101,7 @@ Ad gửi bản WAV 44.1kHz – 24bit full quality và video.
 # ==================== MENU CHÍNH ====================
 def main_menu_keyboard():
     return InlineKeyboardMarkup([
-        [InlineKeyboardButton("🛍️ Xem Sản Phẩm", callback_data="menu_sanpham")],
+        [InlineKeyboardButton("🎵 Xem Dịch Vụ", callback_data="menu_sanpham")],
         [InlineKeyboardButton("📋 Quy Trình Làm Việc", callback_data="menu_quitrinh")],
         [InlineKeyboardButton("💬 Liên Hệ Tư Vấn", callback_data="menu_lienhe")],
         [InlineKeyboardButton("ℹ️ Giới Thiệu Shop", callback_data="menu_gioithieu")],
@@ -118,7 +118,7 @@ def sanpham_keyboard():
 
 def datmua_keyboard(sp_id):
     return InlineKeyboardMarkup([
-        [InlineKeyboardButton("✅ Đặt Mua Ngay", callback_data=f"datmua_{sp_id}")],
+        [InlineKeyboardButton("🎵 Đặt Bài Ngay", callback_data=f"datmua_{sp_id}")],
         [InlineKeyboardButton("🔙 Quay lại danh sách", callback_data="menu_sanpham")],
     ])
 
@@ -189,7 +189,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "✅ Thanh toán 3 đợt an toàn",
             parse_mode="Markdown",
             reply_markup=InlineKeyboardMarkup([
-                [InlineKeyboardButton("🛍️ Xem Sản Phẩm", callback_data="menu_sanpham")],
+                [InlineKeyboardButton("🎵 Xem Dịch Vụ", callback_data="menu_sanpham")],
                 [InlineKeyboardButton("🔙 Quay lại", callback_data="back_main")],
             ])
         )
@@ -212,35 +212,50 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 reply_markup=datmua_keyboard(sp_id)
             )
 
-    # --- ĐẶT MUA ---
+    # --- ĐẶT BÀI ---
     elif data.startswith("datmua_"):
         sp_id = data[7:]
         sp = PRODUCTS.get(sp_id)
+
         if sp:
             user = query.from_user
-            # Thông báo cho admin
+
             admin_text = (
-                f"🔔 *ĐƠN HÀNG MỚI!*\n\n"
+                f"🎵 *YÊU CẦU MỚI!*\n\n"
                 f"👤 Khách: {user.full_name}\n"
                 f"🆔 ID: `{user.id}`\n"
-                f"📦 Sản phẩm: {sp['name']}\n"
+                f"🎼 Dịch vụ: {sp['name']}\n"
                 f"💰 Giá: {sp['price']}\n\n"
                 f"➡️ Liên hệ: @{user.username or 'không có username'}"
             )
+
             try:
-                await context.bot.send_message(ADMIN_ID, admin_text, parse_mode="Markdown")
+                await context.bot.send_message(
+                    ADMIN_ID,
+                    admin_text,
+                    parse_mode="Markdown"
+                )
             except Exception as e:
                 logger.error(f"Không gửi được cho admin: {e}")
 
-            # Phản hồi khách
+            coc = {
+                "500.000đ": "200.000đ",
+                "800.000đ": "320.000đ",
+                "1.500.000đ": "600.000đ",
+                "100.000đ": "40.000đ"
+            }.get(sp["price"], "40%")
+
             await query.edit_message_text(
-                f"✅ *Đặt hàng thành công!*\n\n"
-                f"📦 {sp['name']}\n"
-                f"💰 {sp['price']}\n\n"
-                f"Ad đã nhận yêu cầu và sẽ liên hệ bạn sớm nhất!\n\n"
-                f"📋 Bước tiếp theo:\n"
-                f"• Ad sẽ nhắn xác nhận & gửi thông tin chuyển cọc 40%\n"
-                f"• Sau khi cọc, tiến hành sản xuất ngay 🎵",
+                f"🎵 *YÊU CẦU THỰC HIỆN ĐÃ ĐƯỢC GỬI*\n\n"
+                f"🎼 Dịch vụ: {sp['name']}\n"
+                f"💰 Giá trị: {sp['price']}\n\n"
+                f"💳 Đặt cọc: {coc}\n\n"
+                f"🏦 Ngân hàng: VietinBank\n"
+                f"👤 Chủ TK: NGUYEN DAO TRANG KHANH\n"
+                f"🔢 STK: 00006131583\n\n"
+                f"📝 Nội dung chuyển khoản:\n"
+                f"LUBO{user.id}\n\n"
+                f"📸 Sau khi chuyển khoản xong, hãy gửi ảnh biên lai cho ad.",
                 parse_mode="Markdown",
                 reply_markup=InlineKeyboardMarkup([
                     [InlineKeyboardButton("🏠 Về Trang Chủ", callback_data="back_main")]
